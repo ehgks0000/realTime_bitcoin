@@ -1,0 +1,18 @@
+<!-- views/hello.ejs -->
+
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Hello Coin!</title>
+  </head>
+  <body>
+    <h1>Coin
+      <% if(coin){ %>
+        <span class="coin"><%= coin %>!</span>
+      <% } else { %>
+        <span class="stranger">Stranger!</span>
+      <% } %>
+    </h1>
+  </body>
+</html>

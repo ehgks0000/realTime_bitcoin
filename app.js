@@ -9,13 +9,6 @@ app.use(express.static(__dirname + "/public"));
 
 let data;
 
-const Socket = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
-Socket.onmessage = (e) => {
-  data = e.data;
-  //   data = JSON.parse(e.data);
-  //   console.log(data);
-};
-
 app.get("/", (req, res) => {
   res.send();
 });

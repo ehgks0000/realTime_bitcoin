@@ -28,10 +28,10 @@ function createContainer(coin) {
     let change = Number(data.p);
     let percent = Number(data.P);
 
-    priceH1.innerText = price.toFixed(2);
+    priceH1.innerText = "$ " + price.toFixed(2);
     // priceH1.innerText = data.c;
-    changeH1.innerText = change.toFixed(2);
-    percentH1.innerText = percent.toFixed(2) + "%";
+    changeH1.innerText = "$ " + change.toFixed(2);
+    percentH1.innerText = percent.toFixed(2) + " %";
   };
   newDiv.appendChild(newH1);
   newDiv.appendChild(priceH1);

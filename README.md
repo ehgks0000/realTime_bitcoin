@@ -1,6 +1,6 @@
-# 비트코인 실시간 가격으로
+# 비트코인 실시간 가격, 간단한 크롬 익스텐션 만들기
 
-# 크롬 익스텐션 만들어보기
+<img src="./gif-maker.gif">
 
 ## 바이낸스 webSocket을 이용한 실시간 가격 반영
 
@@ -47,3 +47,9 @@ Received Payload:
 ```
 
 주소 : https://docs.binance.org/api-reference/dex-api/ws-streams.html
+
+## 사용 스택
+
+- 바이낸스 api stream
+- JS, HTML, CSS
+- webSocket

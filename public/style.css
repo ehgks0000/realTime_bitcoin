@@ -12,9 +12,11 @@ body {
   display: inline-block;
   width: 100px;
   font-size: medium;
+  font-family: "Noto Sans KR", sans-serif;
 }
 .coin {
-  font-family: Arial, Helvetica, sans-serif;
+  /* font-family: Arial, Helvetica, sans-serif; */
+  font-family: "Noto Sans KR", sans-serif;
   font-size: medium;
 }
 

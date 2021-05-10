@@ -6,26 +6,32 @@ function createContainer(coin) {
   const coinContainer = document.getElementById("coin-container");
 
   const newDiv = document.createElement("div");
-  newDiv.setAttribute("id", coin);
+  newDiv.setAttribute("class", `${coin} coin`);
 
-  const newH1 = document.createElement("h1");
-  newH1.innerText = "new";
+  const newH1 = document.createElement("span");
+  newH1.setAttribute("id", "coinName");
 
-  const priceH1 = document.createElement("h1");
-  priceH1.setAttribute("id", coin + "-price");
+  const priceH1 = document.createElement("span");
+  priceH1.setAttribute("id", "price");
 
-  const changeH1 = document.createElement("h1");
-  changeH1.setAttribute("id", coin + "-change");
+  const changeH1 = document.createElement("span");
+  changeH1.setAttribute("id", "change");
 
-  const percentH1 = document.createElement("h1");
-  percentH1.setAttribute("id", coin + "-percent");
+  const percentH1 = document.createElement("span");
+  percentH1.setAttribute("id", "percent");
 
   socket.onmessage = (e) => {
     data = JSON.parse(e.data);
-    newH1.innerText = `${coin} 가격`;
-    priceH1.innerText = data.c;
-    changeH1.innerText = data.p;
-    percentH1.innerText = data.P + "%";
+    newH1.innerText = `${coin}`;
+
+    let price = Number(data.c);
+    let change = Number(data.p);
+    let percent = Number(data.P);
+
+    priceH1.innerText = price.toFixed(2);
+    // priceH1.innerText = data.c;
+    changeH1.innerText = change.toFixed(2);
+    percentH1.innerText = percent.toFixed(2) + "%";
   };
   newDiv.appendChild(newH1);
   newDiv.appendChild(priceH1);

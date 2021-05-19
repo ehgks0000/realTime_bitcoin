@@ -5,7 +5,7 @@
 ## 바이낸스 webSocket을 이용한 실시간 가격 반영
 
 - api : wss://stream.binance.com:9443/ws/btcusdt@trade
-
+- Chrome web Store : https://chrome.google.com/webstore/detail/real-time-bitcoin-price-t/fomomppobobjlpcbcfgmmlganonlkkck/related?hl=ko
 - payload
 
 ```

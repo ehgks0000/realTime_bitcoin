@@ -38,28 +38,31 @@ const App: React.FC = () => {
   );
   const [errorMessage, setErrorMessage] = useState("");
   const setupWebSocket = (coinName: string) => {
-    if (!coins.includes(coinName)) {
-      const socket = new WebSocket(
-        `wss://stream.binance.com:9443/ws/${coinName}usdt@ticker`
-      );
+    return new Promise((res, rej) => {
+      if (!coins.includes(coinName)) {
+        const socket = new WebSocket(
+          `wss://stream.binance.com:9443/ws/${coinName}usdt@ticker`
+        );
 
-      socket.onopen = () => {
-        // 실시간 데이터 수신 설정
-        socket.onmessage = (event) => {
-          const data: CoinData = JSON.parse(event.data);
-          setCoinData((prevData) => ({ ...prevData, [coinName]: data }));
+        socket.onopen = () => {
+          // 실시간 데이터 수신 설정
+          socket.onmessage = (event) => {
+            const data: CoinData = JSON.parse(event.data);
+            setCoinData((prevData) => ({ ...prevData, [coinName]: data }));
+            res(true);
+          };
+
+          // 코인 리스트에 추가
         };
 
-        // 코인 리스트에 추가
-        setCoins((prevCoins) => [...new Set([...prevCoins, coinName])]);
-      };
-
-      socket.onerror = () => {
-        setErrorMessage(`존재하지 않는 코인입니다.`);
-        setTimeout(() => setErrorMessage(""), 1000);
-        socket.close();
-      };
-    }
+        socket.onerror = () => {
+          setErrorMessage(`존재하지 않는 코인입니다.`);
+          setTimeout(() => setErrorMessage(""), 1000);
+          socket.close();
+          rej(false);
+        };
+      }
+    });
   };
 
   useEffect(() => {
@@ -92,13 +95,19 @@ const App: React.FC = () => {
 
   const addCoin = () => {
     if (input && !coins.includes(input)) {
-      setupWebSocket(input);
+      setupWebSocket(input).then((isTrue) => {
+        if (isTrue) {
+          setCoins((prevCoins) => [...new Set([...prevCoins, input])]);
+        }
+      });
+
       setInput("");
     }
   };
 
   const removeCoin = (coin: string) => {
-    setCoins(coins.filter((c) => c !== coin));
+    setCoins((preCoins) => preCoins.filter((c) => c !== coin));
+    // setCoins(coins.filter((c) => c !== coin));
   };
   return (
     <div>

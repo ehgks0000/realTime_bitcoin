@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "module": "es6",
+    "target": "es2015",
+    "jsx": "react",
+    "allowJs": true,
+    "moduleResolution": "node",
+    "types": ["chrome"],
+    "lib": ["es2016", "dom"]
+  },
+  "include": ["./src/**/*"]
+}

@@ -1,1 +1,8 @@
 node_modules
+
+*.crx
+*.pem
+
+public/background.js
+public/index.js
+public/popup.html

@@ -43,3 +43,15 @@ body {
   width: 100px;
   /* margin-right: 3px; */
 }
+
+.error-message {
+  position: fixed; /* 또는 다른 적절한 위치 */
+  top: 50%; /* 뷰포트의 중앙에 위치 */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: red;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  /* 기타 스타일링 */
+}

@@ -1,0 +1,18 @@
+{
+    "manifest_version": 3,
+
+    "name": "Real Time BitCoin Price Ticker",
+    "description": "바이낸스 API를 이용한 실시간 비트코인 가격 Ticker",
+    "version": "1.0",
+
+    "action": {
+        "default_icon": "icon.png",
+        "default_popup": "popup.html"
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "permissions": [
+        "activeTab"
+    ]
+  }

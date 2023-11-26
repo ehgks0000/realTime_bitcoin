@@ -55,3 +55,36 @@ body {
   border-radius: 5px;
   /* 기타 스타일링 */
 }
+
+/* 전체 코인 컨테이너 스타일 */
+.coin-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+/* 코인 심볼 스타일 */
+#symbol {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+/* 코인 지갑 주소 스타일 */
+#coin-wallet {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+/* 코인 잔액 스타일 */
+#balance {
+  font-size: 16px;
+  color: #1a73e8;
+}

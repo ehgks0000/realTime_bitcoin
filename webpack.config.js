@@ -1,5 +1,7 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const webpack = require("webpack");
+const Dotenv = require("dotenv-webpack");
 
 module.exports = {
   mode: "production",
@@ -34,5 +36,9 @@ module.exports = {
       // filename: "popup.html",
       chunks: ["popup"], // popup 엔트리 포인트만 포함
     }),
+    new webpack.ProvidePlugin({
+      process: "process/browser",
+    }),
+    new Dotenv(),
   ],
 };

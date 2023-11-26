@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
+import { Alchemy, Network, TokenBalance } from "alchemy-sdk";
+import { ethers } from "ethers";
 import "./style.css";
+
+let api: string;
+try {
+  api = process.env.REACT_APP_ALCHMY_API;
+} catch (error) {
+  throw new Error(error);
+}
+
+const settings = {
+  apiKey: api, // Replace with your Alchemy API key.
+  network: Network.ETH_MAINNET, // Replace with your network.
+};
 
 interface CoinData {
   c: string; // 가격
@@ -8,11 +22,46 @@ interface CoinData {
   P: string; // 백분율
 }
 
+type MyCoins = {
+  symbol: string;
+  wallet: string;
+  balance: string;
+};
+
+interface MyCoinContainerProps {
+  coin: MyCoins;
+}
 interface CoinContainerProps {
   coin: string;
   onRemove: (...args: any) => void;
   data: CoinData;
 }
+
+const MyCoinContianer: React.FC<MyCoinContainerProps> = ({ coin }) => {
+  return (
+    <div className={`coin-container ${coin.wallet}`}>
+      <span id="symbol">{coin.symbol}</span>
+      <span id="coin-wallet">{coin.wallet}</span>
+      <span id="balance">{coin.balance}</span>
+    </div>
+  );
+};
+
+const fetchCoinData = async (token: TokenBalance, alchemy: Alchemy) => {
+  const md = await alchemy.core.getTokenMetadata(token.contractAddress);
+  const balance = ethers.BigNumber.from(token.tokenBalance);
+  const decimalValue = ethers.utils.formatUnits(balance, md.decimals);
+
+  if (decimalValue === "0.0") {
+    return null;
+  }
+
+  return {
+    symbol: md.symbol,
+    wallet: token.contractAddress,
+    balance: decimalValue,
+  };
+};
 
 const CoinContainer: React.FC<CoinContainerProps> = ({
   coin,
@@ -31,35 +80,52 @@ const CoinContainer: React.FC<CoinContainerProps> = ({
 };
 
 const App: React.FC = () => {
+  const [myCoins, setMyCoins] = useState<MyCoins[]>([]);
+  const [myWallet, setMyWallet] = useState<string>("");
+  const [showCoins, setShowCoins] = useState(true);
+
   const [coins, setCoins] = useState<string[]>([]);
   const [input, setInput] = useState("");
+  const [inputMyWallet, setInputMyWallet] = useState("");
   const [coinData, setCoinData] = useState<{ [key: string]: CoinData | null }>(
     {}
   );
   const [errorMessage, setErrorMessage] = useState("");
-  const setupWebSocket = (coinName: string) => {
-    if (!coins.includes(coinName)) {
-      const socket = new WebSocket(
-        `wss://stream.binance.com:9443/ws/${coinName}usdt@ticker`
-      );
 
-      socket.onopen = () => {
-        // 실시간 데이터 수신 설정
-        socket.onmessage = (event) => {
-          const data: CoinData = JSON.parse(event.data);
-          setCoinData((prevData) => ({ ...prevData, [coinName]: data }));
+  const toggleCoins = () => {
+    setShowCoins(!showCoins);
+  };
+  const reset = () => {
+    setMyWallet("");
+    setMyCoins([]);
+  };
+
+  const setupWebSocket = (coinName: string) => {
+    return new Promise((res, rej) => {
+      if (!coins.includes(coinName)) {
+        const socket = new WebSocket(
+          `wss://stream.binance.com:9443/ws/${coinName}usdt@ticker`
+        );
+
+        socket.onopen = () => {
+          // 실시간 데이터 수신 설정
+          socket.onmessage = (event) => {
+            const data: CoinData = JSON.parse(event.data);
+            setCoinData((prevData) => ({ ...prevData, [coinName]: data }));
+            res(true);
+          };
+
+          // 코인 리스트에 추가
         };
 
-        // 코인 리스트에 추가
-        setCoins((prevCoins) => [...new Set([...prevCoins, coinName])]);
-      };
-
-      socket.onerror = () => {
-        setErrorMessage(`존재하지 않는 코인입니다.`);
-        setTimeout(() => setErrorMessage(""), 1000);
-        socket.close();
-      };
-    }
+        socket.onerror = () => {
+          setErrorMessage(`존재하지 않는 코인입니다.`);
+          setTimeout(() => setErrorMessage(""), 1000);
+          socket.close();
+          rej(false);
+        };
+      }
+    });
   };
 
   useEffect(() => {
@@ -92,13 +158,40 @@ const App: React.FC = () => {
 
   const addCoin = () => {
     if (input && !coins.includes(input)) {
-      setupWebSocket(input);
-      setInput("");
+      setupWebSocket(input).then((isTrue) => {
+        if (isTrue) {
+          setCoins((prevCoins) => [...new Set([...prevCoins, input])]);
+        }
+      });
     }
+    setInput("");
+  };
+
+  const addMyWallet = () => {
+    if (!inputMyWallet) {
+      return;
+    }
+    const alchemy = new Alchemy(settings);
+    setMyWallet(inputMyWallet);
+    const setupMyWalletList = async () => {
+      const balances = await alchemy.core.getTokenBalances(inputMyWallet);
+
+      const myCoinsPromises = balances.tokenBalances.map((b) =>
+        fetchCoinData(b, alchemy)
+      );
+
+      const myCoins = (await Promise.all(myCoinsPromises)).filter(
+        (coin) => coin !== null
+      );
+      setMyCoins(myCoins);
+    };
+
+    setupMyWalletList();
+    setInputMyWallet("");
   };
 
   const removeCoin = (coin: string) => {
-    setCoins(coins.filter((c) => c !== coin));
+    setCoins((preCoins) => preCoins.filter((c) => c !== coin));
   };
   return (
     <div>
@@ -120,6 +213,25 @@ const App: React.FC = () => {
         ))}
       </div>
       {errorMessage && <div className="error-message">{errorMessage}</div>}
+      <h2>My Coins</h2>
+      {myWallet && <h2>{myWallet}</h2>}
+      <input
+        type="text"
+        value={inputMyWallet}
+        onChange={(e) => setInputMyWallet(e.target.value)}
+      />
+      <button onClick={addMyWallet}>내 지갑주소 추가</button>
+      <button onClick={toggleCoins}>{showCoins ? "접기" : "펼치기"}</button>
+      <button onClick={reset}>초기화</button>
+      {showCoins && (
+        <div>
+          <div>
+            {myCoins.map((mc) => {
+              return <MyCoinContianer key={mc.symbol + "1"} coin={mc} />;
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

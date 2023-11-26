@@ -3,6 +3,10 @@ node_modules
 *.crx
 *.pem
 
-public/background.js
-public/index.js
-public/popup.html
+public/*
+
+!public/manifest.json
+!public/icon.png
+
+*.zip
+*.env

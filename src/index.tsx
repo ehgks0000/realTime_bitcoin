@@ -100,9 +100,8 @@ const App: React.FC = () => {
           setCoins((prevCoins) => [...new Set([...prevCoins, input])]);
         }
       });
-
-      setInput("");
     }
+    setInput("");
   };
 
   const removeCoin = (coin: string) => {

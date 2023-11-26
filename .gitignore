@@ -6,3 +6,5 @@ node_modules
 public/background.js
 public/index.js
 public/popup.html
+
+*.zip
